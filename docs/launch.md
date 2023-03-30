@@ -8,7 +8,7 @@ ___
 
 Необходимо выполнить следующие действия:
 
-1. Установить [Docker](https://www.docker.com/), если его у Вас нет
+1. Установить [Docker](https://www.docker.com/), если его у Вас нет 
 2. Монтируем образ
     ```commandline
     docker build -f dockerfile_game_xo -t game_xo .
