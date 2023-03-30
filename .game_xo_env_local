@@ -1,0 +1,15 @@
+# Настройка приложения
+LOGGING_GURU="1"
+LOGGING_LEVEL="DEBUG"
+HOST="0.0.0.0"
+PORT=8004
+
+# Настройка Postgres
+POSTGRES__DB=kts
+POSTGRES__USER=kts_user
+POSTGRES__PASSWORD=kts_pass
+POSTGRES__HOST=localhost
+POSTGRES__PORT=5432
+POSTGRES__DB_SCHEMA="game_xo"
+
+
