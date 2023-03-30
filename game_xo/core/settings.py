@@ -18,13 +18,19 @@ class Postgres(BaseModel):
         return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}"
 
 
+class Apispec(BaseModel):
+    title: str = "Документация"
+    swagger_path: str = "/"
+
+
 class Settings(BaseSettings):
     host: str = "localhost"
-    port: int = 8003
-    logging_level: str
-    logging_guru: bool
+    port: int = 8004
+    logging_level: str = "INFO"
+    logging_guru: bool = True
 
     postgres: Postgres = Postgres()
+    apispec: Apispec = Apispec()
 
     class Config:
         env_nested_delimiter = "__"

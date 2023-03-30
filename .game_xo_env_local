@@ -12,4 +12,6 @@ POSTGRES__HOST=localhost
 POSTGRES__PORT=5432
 POSTGRES__DB_SCHEMA="game_xo"
 
-
+# Настройка Apispec
+APISPEC__TITLE="Что? Где? Когда?"
+APISPEC__SWAGGER_PATH="/"
