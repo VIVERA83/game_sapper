@@ -1,7 +1,6 @@
 import typing
 
-from store.database.postgres import GameDatabase
-from store.game.game_accessor import GameAccessor
+from store.database.database import Database
 
 if typing.TYPE_CHECKING:
     from core.app import Application
@@ -9,9 +8,9 @@ if typing.TYPE_CHECKING:
 
 class Store:
     def __init__(self, app: "Application"):
-        self.game = GameAccessor(app)
+        pass
 
 
 def setup_store(app: "Application"):
-    app.postgres = GameDatabase(app)
+    app.postgres = Database(app)
     app.store = Store(app)

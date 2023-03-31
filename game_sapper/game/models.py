@@ -1,18 +1,18 @@
 from game.data_classes import User, Round, GameSession
-from store.database.database import GameBase
+from store.database.database import Base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.schema import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
-class UserGameSessionModel(GameBase):
+class UserGameSessionModel(Base):
     __tablename__ = "user_game_session"  # noqa
 
     user_id: Mapped[int] = Column(Integer, ForeignKey("users.id"), primary_key=True, nullable=True)
     game_session_id: Mapped[int] = Column(Integer, ForeignKey("game_sessions.id"), primary_key=True, nullable=True)
 
 
-class UserModel(GameBase):
+class UserModel(Base):
     __tablename__ = "users"  # noqa
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -33,7 +33,7 @@ class UserModel(GameBase):
         )
 
 
-class GameSessionModel(GameBase):
+class GameSessionModel(Base):
     __tablename__ = "game_sessions"  # noqa
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -64,7 +64,7 @@ class GameSessionModel(GameBase):
         )
 
 
-class RoundModel(GameBase):
+class RoundModel(Base):
     __tablename__ = "rounds"  # noqa
 
     id: Mapped[int] = Column(Integer, primary_key=True)
