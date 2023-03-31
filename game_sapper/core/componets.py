@@ -1,7 +1,9 @@
+import logging
 from typing import Optional
 
 from aiohttp import web
 from core.settings import Settings
+from store import Database, Store
 
 
 class Application(web.Application):
@@ -31,3 +33,11 @@ class View(web.View):
         if self.request.method == "GET":
             return self.request.get("querystring", {})
         return self.request.get("data", {})
+
+    @property
+    def store(self) -> "Store":
+        return self.request.app.store
+
+    @property
+    def logger(self) -> logging.Logger:
+        return self.request.app.logger

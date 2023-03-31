@@ -15,7 +15,7 @@ class UserGameSessionModel(Base):
 class UserModel(Base):
     __tablename__ = "users"  # noqa
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     vk_user_id: Mapped[int] = Column(Integer, unique=True)
     username: Mapped[str] = Column(String)
     game_sessions: Mapped[list["GameSessionModel"]] = relationship(
@@ -67,12 +67,15 @@ class GameSessionModel(Base):
 class RoundModel(Base):
     __tablename__ = "rounds"  # noqa
 
-    id: Mapped[int] = Column(Integer, primary_key=True)
+    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
     game_session_id: Mapped[int] = mapped_column(ForeignKey("game_sessions.id"))
     round_number: Mapped[int] = Column(Integer, nullable=False, )
     player_id: Mapped[int] = Column(Integer, nullable=False)
     cords: Mapped[str] = Column(String, nullable=False)
     result: Mapped[str] = Column(String, nullable=False)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+
 
     @property
     def as_dataclass(self) -> "Round":

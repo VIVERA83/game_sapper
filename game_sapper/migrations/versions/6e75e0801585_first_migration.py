@@ -1,8 +1,8 @@
 """First migration
 
-Revision ID: 4a63c1b11069
+Revision ID: 6e75e0801585
 Revises: 
-Create Date: 2023-03-31 18:56:46.550922
+Create Date: 2023-03-31 20:16:14.527180
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '4a63c1b11069'
+revision = '6e75e0801585'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,7 +25,7 @@ def upgrade() -> None:
     schema='game_sapper'
     )
     op.create_table('users',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('vk_user_id', sa.Integer(), nullable=True),
     sa.Column('username', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
@@ -33,13 +33,15 @@ def upgrade() -> None:
     schema='game_sapper'
     )
     op.create_table('rounds',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('game_session_id', sa.Integer(), nullable=False),
     sa.Column('round_number', sa.Integer(), nullable=False),
     sa.Column('player_id', sa.Integer(), nullable=False),
     sa.Column('cords', sa.String(), nullable=False),
     sa.Column('result', sa.String(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['game_session_id'], ['game_sapper.game_sessions.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['game_sapper.users.id'], ),
     sa.PrimaryKeyConstraint('id'),
     schema='game_sapper'
     )

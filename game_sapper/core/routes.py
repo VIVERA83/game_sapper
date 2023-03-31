@@ -5,4 +5,6 @@ if typing.TYPE_CHECKING:
 
 
 def setup_routes(app: "Application"):
-    pass
+    from game.routes import setup_routes as game_setup_routes
+
+    game_setup_routes(app)

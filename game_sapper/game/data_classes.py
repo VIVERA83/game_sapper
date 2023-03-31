@@ -22,6 +22,12 @@ class User(BaseDataClass):
 
 
 @dataclass
+class UserRequest(BaseDataClass):
+    vk_user_id: int
+    username: str = None
+
+
+@dataclass
 class GameSession(BaseDataClass):
     id: int
     field: str
