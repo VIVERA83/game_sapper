@@ -7,3 +7,4 @@ sqlalchemy==2.0.7
 alembic==1.10.2
 asyncpg==0.27.0
 marshmallow==3.19.0
+marshmallow_enum==1.5.1
