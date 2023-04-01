@@ -28,6 +28,12 @@ class VK(BaseModel):
     group_id: str = ""
 
 
+class Bot(BaseModel):
+    name: str = "Bot"
+    user_expired: int = 100
+    keyboard_expired: int = 60
+
+
 class Settings(BaseSettings):
     host: str = "localhost"
     port: int = 8004
@@ -38,6 +44,7 @@ class Settings(BaseSettings):
     postgres: Postgres = Postgres()
     apispec: Apispec = Apispec()
     vk: VK = VK()
+    bot: Bot = Bot()
 
     class Config:
         env_nested_delimiter = "__"

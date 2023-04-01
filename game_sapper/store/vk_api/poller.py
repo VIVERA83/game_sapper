@@ -1,5 +1,5 @@
 import asyncio
-from asyncio import Task
+from asyncio import Task, CancelledError
 from typing import Optional
 
 from store import Store
@@ -17,9 +17,14 @@ class Poller:
 
     async def stop(self):
         self.is_running = False
+        self.poll_from_vk_task.cancel()
         await self.poll_from_vk_task
+        self.store.bots_manager.logger.info("Stopped VK_API polling")
 
     async def poll(self):
         while self.is_running:
-            updates = await self.store.vk_api.poll()
-            await self.store.bots_manager.handle_updates(updates)
+            try:
+                updates = await self.store.vk_api.poll()
+                await self.store.bots_manager.handle_updates(updates)
+            except CancelledError:
+                self.is_running = False

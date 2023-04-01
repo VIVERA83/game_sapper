@@ -6,14 +6,14 @@ if typing.TYPE_CHECKING:
 
 
 class BaseAccessor:
-    def __init__(self, app: "Application", *_: list, **__: dict):
+    def __init__(self, app: "Application", *args: list, **kwargs: dict):
         self.app = app
         self.logger = app.logger
         app.on_startup.append(self.connect)
         app.on_cleanup.append(self.disconnect)
-        self._init_()
+        self._init_(app, *args, **kwargs)
 
-    def _init_(self):
+    def _init_(self, app: "Application", *_: list, **__: dict):
         """Описание дополнительных действий для инициализации"""
         pass
 

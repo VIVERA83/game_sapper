@@ -1,4 +1,3 @@
-import pickle
 from dataclasses import asdict, dataclass, field
 from enum import Enum
 from typing import Optional
@@ -23,9 +22,11 @@ class Payload:
 
 @dataclass
 class Message:
-    user_id: int
+    id: int
     text: str
-    keyboard: str
+    payload: Payload  # noqa
+    peer_id: int
+    user_id: int
 
 
 @dataclass
@@ -39,18 +40,19 @@ class EventMessage:
 
 @dataclass
 class Object:
-    user_id: int
-    payload: Payload
-    id: int = None
-    body: str = None
-    event_id: str = None
-    peer_id: int = None
+    message: Message
 
 
 @dataclass
 class Update:
     type: TypeMessage
     object: Object
+
+    event_id: str
+    group_id: int
+    object: Object
+    type: TypeMessage
+    v: str
 
     def as_dict(self):
         return {"object": asdict(self.object), "type": self.type.value}
@@ -67,31 +69,31 @@ class VKResponse:
         return asdict(self)
 
 
-@dataclass
-class MessageFromVK:
-    user_id: int
-    body: str
-    type: TypeMessage
-    payload: Optional["Payload"] = None
-    event_id: str = None
-    peer_id: int = None
-    event_data: str = None
-
-    @property
-    def as_dict(self):
-        return {
-            "user_id": self.user_id,
-            "body": self.body,
-            "payload": self.payload.as_dict if self.payload else None,
-            "type": self.type.value,
-            "event_id": self.event_id,
-            "peer_id": self.peer_id,
-            "event_data": self.event_data,
-        }
-
-    @property
-    def as_bytes(self):
-        return pickle.dumps(self.as_dict)
+# @dataclass
+# class MessageFromVK:
+#     user_id: int
+#     text: str
+#     type: TypeMessage
+#     payload: Optional["Payload"] = None
+#     event_id: str = None
+#     peer_id: int = None
+#     event_data: str = None
+#
+#     @property
+#     def as_dict(self):
+#         return {
+#             "user_id": self.user_id,
+#             "body": self.text,
+#             "payload": self.payload.as_dict if self.payload else None,
+#             "type": self.type.value,
+#             "event_id": self.event_id,
+#             "peer_id": self.peer_id,
+#             "event_data": self.event_data,
+#         }
+#
+#     @property
+#     def as_bytes(self):
+#         return pickle.dumps(self.as_dict)
 
 
 @dataclass
@@ -104,17 +106,3 @@ class MessageToVK:
     event_id: str = None
     peer_id: int = None
     event_data: str = "Test Schema BOT"
-
-    @property
-    def as_bytes(self) -> bytes:
-        return pickle.dumps(
-            {
-                "type": self.type.value,
-                "user_id": self.user_id,
-                "text": self.text,
-                "keyboard": self.keyboard,
-                "event_id": self.event_id,
-                "peer_id": self.peer_id,
-                "event_data": self.event_data,
-            }
-        )

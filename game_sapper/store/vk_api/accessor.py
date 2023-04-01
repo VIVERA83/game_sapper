@@ -2,18 +2,18 @@ import asyncio
 import json
 import random
 import traceback
-import typing
-from typing import Optional
+from asyncio import CancelledError
+from typing import Optional, TYPE_CHECKING
 
 from aiohttp import TCPConnector
 from aiohttp.client import ClientSession
 
 from base.base_accessor import BaseAccessor
-from store.vk_api.data_classes import EventMessage, Message, Update, VKResponse
+from store.vk_api.data_classes import EventMessage, Update, VKResponse, MessageToVK
 from store.vk_api.poller import Poller
 from store.vk_api.schemes import VKResponseSchema
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from core.app import Application
 
 API_PATH = "https://api.vk.com/method/"
@@ -37,8 +37,8 @@ class VkApiAccessor(BaseAccessor):
             # traceback.format_exc() if request.app.settings.traceback else error
             self.logger.error(traceback.format_exc() if self.app.settings.traceback else f"Exception: {e.args}")
         self.poller = Poller(app.store)
-        self.logger.info("start polling")
         await self.poller.start()
+        self.logger.info("start polling")
 
     async def disconnect(self, app: "Application"):
         if self.poller and self.poller.is_running:
@@ -97,13 +97,13 @@ class VkApiAccessor(BaseAccessor):
             self.ts = data["ts"]
             self.logger.info(f"New VK-API session key has been received")
 
-    async def send_message(self, message: Message) -> None:
+    async def send_message(self, message: MessageToVK) -> None:
         async with self.session.get(
                 self._build_query(
                     host=API_PATH,
                     method="messages.send",
                     params={
-                        "user_id": message.user_id,  # user
+                        "user_id": message.user_id,
                         "random_id": random.randint(1, 2 ** 32),
                         "peer_id": "-" + str(self.app.settings.vk.group_id),
                         "message": message.text,
@@ -121,7 +121,7 @@ class VkApiAccessor(BaseAccessor):
                     method="messages.sendMessageEventAnswer",
                     params={
                         "event_id": message.event_id,
-                        # "user_id": message.user_id,
+                        "user_id": message.user_id,
                         "peer_id": message.peer_id,
                         "event_data": json.dumps(
                             {"text": message.event_data, "type": "show_snackbar"}

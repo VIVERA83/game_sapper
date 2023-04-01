@@ -13,9 +13,8 @@ from store.vk_api.data_classes import (
     TypeMessage,
     Update,
     VKResponse,
-    MessageFromVK,
-    MessageToVK,
 )
+
 
 objects = Union[
     Type[VKResponse],
@@ -39,6 +38,27 @@ class BaseSchema(Schema):
         ordered = True
 
 
+class MessageSchema(BaseSchema):
+    __model__ = Message
+
+    id = fields.Int()
+    user_id = fields.Integer()
+    text = fields.String()
+    payload = fields.Nested("PayloadSchema", load_default=Payload())  # noqa
+    peer_id = fields.Int()
+
+    @pre_load
+    def make_obj(self, value: Union[str, dict], **_: dict):
+        if not value.get("user_id"):
+            value["user_id"] = value.get("from_id")
+        if isinstance(value.get("payload"), str):
+            value["payload"] = json.loads(value.get("payload"))
+            if not value["payload"].get("data"):
+                value["payload"]["data"] = {}
+            return value
+        return value
+
+
 class PayloadSchema(BaseSchema):
     __model__ = Payload
 
@@ -49,21 +69,18 @@ class PayloadSchema(BaseSchema):
 class ObjectSchema(BaseSchema):
     __model__ = Object
 
-    id = fields.Int()
-    user_id = fields.Integer()
-    body = fields.String()
-    payload = fields.Nested(PayloadSchema(), load_default=Payload())
-    event_id = fields.Str()
-    peer_id = fields.Int()
+    message = fields.Nested(MessageSchema())
 
     @pre_load
     def make_obj(self, value: Union[str, dict], **_: dict):
-        if isinstance(value.get("message"), dict):
-            value["user_id"] = value["message"].get("peer_id")
-        if isinstance(value.get("payload"), str):
-            value["payload"] = json.loads(value.get("payload"))
-            if not value["payload"].get("data"):
-                value["payload"]["data"] = {}
+        if value.get("user_id"):
+            value["message"] = {
+                "id": 0,
+                "text": "Test",
+                "user_id": value["user_id"],
+                "payload": value["payload"],
+                "peer_id": value["peer_id"],
+            }
             return value
         return value
 
@@ -71,8 +88,17 @@ class ObjectSchema(BaseSchema):
 class UpdateSchema(BaseSchema):
     __model__ = Update
 
-    type = EnumField(TypeMessage)
+    event_id = fields.Str()
+    group_id = fields.Int()
     object = fields.Nested(ObjectSchema())
+    type = EnumField(TypeMessage)
+    v = fields.Str()
+
+    @pre_load
+    def make_obj(self, value: Union[str, dict], **_: dict):
+        if value.get("type") == TypeMessage.message_event.value:
+            value["event_id"] = value.get("object")["event_id"]
+        return value
 
 
 class VKResponseSchema(BaseSchema):
@@ -82,28 +108,3 @@ class VKResponseSchema(BaseSchema):
     failed = fields.Int()
     updates = fields.List(fields.Nested(UpdateSchema()), load_default=None)
     error = fields.Dict(load_default=None)
-
-
-class MessageFromVKSchema(BaseSchema):
-    __model__ = MessageFromVK
-
-    user_id = fields.Integer()
-    body = fields.String()
-    payload = fields.Nested(PayloadSchema())
-    type = EnumField(TypeMessage)
-    event_id = fields.Str(missing=None)
-    peer_id = fields.Int(missing=None)
-    event_data = fields.Str(missing=None)
-
-
-class MessageToVKSchema(BaseSchema):
-    __model__ = MessageToVK
-
-    user_id = fields.Integer()
-    text = fields.String()
-    keyboard = fields.Str()
-
-    event_id = fields.Str(missing=None)
-    peer_id = fields.Int(missing=None)
-    type = EnumField(TypeMessage)
-    event_data = fields.Str(missing=None)
