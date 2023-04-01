@@ -3,7 +3,9 @@ from core.app import make_app
 
 if __name__ == "__main__":
     app = make_app()
-    if all([app.settings.postgres.db,
+    if all([app.settings.vk.token,
+            app.settings.vk.group_id,
+            app.settings.postgres.db,
             app.settings.postgres.user,
             app.settings.postgres.password,
             app.settings.postgres.db_schema]):
@@ -15,4 +17,6 @@ if __name__ == "__main__":
                 POSTGRES__USER
                 POSTGRES__PASSWORD
                 POSTGRES__DB_SCHEMA
+                VK__TOKEN
+                VK__GROUP_ID
         """)
