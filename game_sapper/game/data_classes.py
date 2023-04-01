@@ -16,9 +16,9 @@ class BaseDataClass:
 class User(BaseDataClass):
     id: int
     vk_user_id: int
-    username: str
     game_sessions: list["GameSessionModel"]
     rounds: list["RoundModel"]
+    username: str = None
 
 
 @dataclass

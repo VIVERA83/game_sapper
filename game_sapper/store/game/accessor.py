@@ -8,7 +8,7 @@ from sqlalchemy import CursorResult, insert, select
 
 
 class GameAccessor(BaseAccessor):
-    async def create_user(self, user: User):
+    async def create_user(self, user: User) -> User:
         async with self.app.database.session.begin().session as session:
             async with session:
                 query = (
@@ -22,7 +22,8 @@ class GameAccessor(BaseAccessor):
                 )
                 result: CursorResult = await session.execute(query)  # noqa
                 await session.commit()
-        return result.unique().scalars().first()
+        user: UserModel = result.unique().scalars().first()
+        return user.as_dataclass
 
     async def get_user_by_vk_id(self, vk_user_id: int):
         async with self.app.database.session.begin().session as session:

@@ -1,5 +1,5 @@
 from typing import Optional, Union
-
+from icecream import ic
 from game.data_classes import (
     # GameSession,
     Round,
@@ -8,7 +8,7 @@ from game.data_classes import (
 from marshmallow import (
     EXCLUDE,
     Schema,
-    # ValidationError,
+    ValidationError,
     fields,
     post_load,
     # pre_dump,
@@ -46,7 +46,7 @@ class UserSchema(BaseSchema):
 class UserRequestSchema(BaseSchema):
     __model__ = UserRequest
 
-    vk_user_id = fields.Int(required=True, example="1")
+    vk_user_id = fields.Int(required=True, validate=lambda data: validate_vk_user_id(data), example="1")
     username = fields.Str(example="Павел Дуров")
 
 
@@ -68,6 +68,11 @@ class RoundSchema(BaseSchema):
     player_id = fields.Int(required=True, example=3254876)
     cords = fields.Str(required=True, example="НУЖНО ПРИДУМАТЬ")
     result = fields.Str(required=True, example="НУЖНО ПРИДУМАТЬ")
+
+
+def validate_vk_user_id(data: int):
+    if data < 1:
+        raise ValidationError("The value must be greater than 0")
 
 #
 #

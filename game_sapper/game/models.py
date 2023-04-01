@@ -17,7 +17,7 @@ class UserModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     vk_user_id: Mapped[int] = Column(Integer, unique=True)
-    username: Mapped[str] = Column(String)
+    username: Mapped[str] = Column(String, default="")
     game_sessions: Mapped[list["GameSessionModel"]] = relationship(
         secondary=UserGameSessionModel.__table__, back_populates="users", lazy="joined")
     rounds: Mapped[list["RoundModel"]] = relationship(lazy="joined")
@@ -27,7 +27,7 @@ class UserModel(Base):
         return User(
             id=self.id,
             vk_user_id=self.vk_user_id,
-            username=self.vk_user_id,
+            username=self.username,
             game_sessions=[game_session.as_dataclass for game_session in self.game_sessions],
             rounds=[round_.as_dataclass for round_ in self.rounds],
         )

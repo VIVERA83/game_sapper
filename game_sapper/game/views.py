@@ -23,7 +23,7 @@ class UserAddView(View):
     async def post(self):
         user = await self.store.sapper.create_user(self.data)
         self.logger.debug(f"{self.__class__.__name__} : {user}")
-        return json_response(data=UserSchema().dump(user.as_dataclass))
+        return json_response(data=UserSchema().dump(user))
 
 
 # class UserGetByVkIdViews(View):

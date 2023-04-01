@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     port: int = 8004
     logging_level: str = "INFO"
     logging_guru: bool = True
+    traceback: bool = False
 
     postgres: Postgres = Postgres()
     apispec: Apispec = Apispec()
