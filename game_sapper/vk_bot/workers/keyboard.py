@@ -1,5 +1,5 @@
 import logging
-from asyncio import CancelledError, Queue, Task
+from asyncio import CancelledError, Queue, Task, Event
 from copy import deepcopy
 from typing import TYPE_CHECKING, Callable, Optional, Union, Type, Any
 from time import monotonic
@@ -91,7 +91,7 @@ class Keyboard(BasePoller):
         self.is_redirect = []
         self.farewell_text = "Всем пока"
         # Событие произошло впервые (для того что бы можно было применить настройки, выбрать капитана)
-        self.is_first = True
+        self.is_first = Event()
         self.timeout_keyboard = timeout_keyboard
         self.is_timeout = False
         self._init_()
@@ -123,7 +123,6 @@ class Keyboard(BasePoller):
                 self.is_running = False
                 return
         if self.timeout_keyboard:
-            ic(self.timeout_keyboard)
             self.timeout_keyboard.user_ids = deepcopy(self.users)
             await self.redirect(**self.timeout_keyboard.as_dict())
             self.timeout_keyboard = None
@@ -239,9 +238,7 @@ class Keyboard(BasePoller):
                 # формируем сообщения для подписчиков Клавиатура, Пользователь
                 if not event:
                     event = KeyboardEventEnum.select
-                    self.logger.error(
-                        f"No value is set for `event`. {self.name} message type: {message}"
-                    )
+                    self.logger.error(f"No value is set for `event`. {self.name} message type: {message}")
                 message_to_keyboard, message_to_vk = await self.create_messages(
                     event, message
                 )
@@ -407,10 +404,7 @@ class Keyboard(BasePoller):
                     user.current_keyboard = self.name
                     # Назначаем настройки по умолчанию, если их нет у пользователя
                     if not user.get_setting_keyboard(self.__class__.name):
-                        user.set_setting_keyboard(
-                            self.__class__.name,
-                            await self.get_keyboard_default_setting(),
-                        )
+                        user.set_setting_keyboard(self.__class__.name, self.get_keyboard_default_setting())
             # обходим все клавиатуры, и добавляем их в клавиатуру
             if message.keyboards:
                 for keyboard_name in message.keyboards:
@@ -425,7 +419,21 @@ class Keyboard(BasePoller):
             self.logger.error(f"{self.__class__.__name__} : {e}")
 
     async def event_new(self, message: MessageFromKeyboard) -> KeyboardEventEnum:
+        await self.first_run_keyboard(message)
         return KeyboardEventEnum.update
+
+    async def first_run_keyboard(self, message: MessageFromKeyboard):
+        if not self.is_first.is_set():
+            if self.users:
+                self.is_first.set()
+                self.settings = self.get_setting_keyboard()
+                self.create_buttons()
+                ic("First")
+            else:
+                self.logger.error(f"The list of users is empty: {self.users}")
+
+    def create_buttons(self):
+        """Создаем кнопки"""
 
     async def _event_select(self, message: MessageFromKeyboard) -> KeyboardEventEnum:
         self.bot.logger.warning(f"SELECT_EVENT {self.name} {message}")
@@ -449,9 +457,7 @@ class Keyboard(BasePoller):
         )
         return KeyboardEventEnum.select
 
-    async def send_message_to_bot(
-            self, message: Union[MessageFromVK, MessageFromKeyboard]
-    ):
+    async def send_message_to_bot(self, message: Union[MessageFromVK, MessageFromKeyboard]):
         """Сообщение для бота, данное сообщение будет обработано в inbound_message_handler"""
         await self.bot.queue_input.put(message)
 
@@ -538,7 +544,7 @@ class Keyboard(BasePoller):
             )
             return KeyboardEventEnum.select
 
-    async def get_setting_keyboard(self) -> Any:
+    def get_setting_keyboard(self) -> Any:
         """Вытаскиваем из User настройки Keyboard, они так же актуальны для игры, если они есть мы их возвращаем,
         иначе применяем настройки по умолчанию"""
         if self.users:
@@ -546,11 +552,12 @@ class Keyboard(BasePoller):
                 if settings := user.get_setting_keyboard(self.__class__.name):
                     return settings
                 else:
-                    return await self.get_keyboard_default_setting()
+                    return self.get_keyboard_default_setting()
             self.logger.error(f"User not found: {self.users[0]}")
 
-    async def get_keyboard_default_setting(self) -> Any:
+    def get_keyboard_default_setting(self) -> Any:
         """Настройки клавиатуры по умолчанию, место куда скидывают настройки по умолчанию для клавиатур"""
+        return self.settings
 
     def delete_inactive(self):
         """Удаление из списка слушателей User и Keyboard, которые не активны"""
