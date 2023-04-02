@@ -2,7 +2,6 @@ import asyncio
 import json
 import random
 import traceback
-from asyncio import CancelledError
 from typing import Optional, TYPE_CHECKING
 
 from aiohttp import TCPConnector
@@ -124,7 +123,7 @@ class VkApiAccessor(BaseAccessor):
                         "user_id": message.user_id,
                         "peer_id": message.peer_id,
                         "event_data": json.dumps(
-                            {"text": message.event_data, "type": "show_snackbar"}
+                            {"text": message.event_data, "type": "show_snackbar"}  # noqa
                         ),
                         "access_token": self.app.settings.vk.token,
                         "keyboard": message.keyboard,

@@ -33,4 +33,3 @@ class Poller:
                     await self.store.vk_api.send_message(message)
             except CancelledError:
                 self.is_running = False
-

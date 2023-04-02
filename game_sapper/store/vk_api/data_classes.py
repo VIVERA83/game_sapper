@@ -69,33 +69,6 @@ class VKResponse:
         return asdict(self)
 
 
-# @dataclass
-# class MessageFromVK:
-#     user_id: int
-#     text: str
-#     type: TypeMessage
-#     payload: Optional["Payload"] = None
-#     event_id: str = None
-#     peer_id: int = None
-#     event_data: str = None
-#
-#     @property
-#     def as_dict(self):
-#         return {
-#             "user_id": self.user_id,
-#             "body": self.text,
-#             "payload": self.payload.as_dict if self.payload else None,
-#             "type": self.type.value,
-#             "event_id": self.event_id,
-#             "peer_id": self.peer_id,
-#             "event_data": self.event_data,
-#         }
-#
-#     @property
-#     def as_bytes(self):
-#         return pickle.dumps(self.as_dict)
-
-
 @dataclass
 class MessageToVK:
     user_id: int
