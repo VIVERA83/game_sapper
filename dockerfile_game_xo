@@ -1,5 +1,5 @@
 FROM python:3.10.9-slim-buster
-WORKDIR game_xo
+WORKDIR game_sapper
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
@@ -24,5 +24,5 @@ ENV APISPEC__SWAGGER_PATH="/"
 RUN pip install --upgrade pip  --no-cache-dir
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY game_xo .
+COPY game_sapper .
 CMD python main.py
