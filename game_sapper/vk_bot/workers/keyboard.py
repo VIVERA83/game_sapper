@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING, Callable, Optional, Union, Type, Any
 from time import monotonic
 from asyncio import sleep
 
-from icecream import ic
-
 from vk_bot.data_classes import (
     MessageFromVK,
     MessageToVK,
@@ -23,7 +21,6 @@ from .poller import BasePoller
 if TYPE_CHECKING:
     from dispatcher import Bot
     from user import User
-ic.includeContext = True
 
 
 class Keyboard(BasePoller):

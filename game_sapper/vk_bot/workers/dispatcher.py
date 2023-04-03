@@ -10,8 +10,6 @@ from .user import User
 if TYPE_CHECKING:
     from core.componets import Application
 
-from icecream import ic
-
 
 class Bot(BasePoller):
     def __init__(
