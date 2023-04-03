@@ -1,6 +1,6 @@
 import logging
 from asyncio import CancelledError, Queue
-from typing import Optional, Type, TYPE_CHECKING
+from typing import Optional, Type, TYPE_CHECKING, Any
 
 from vk_bot.data_classes import MessageFromVK, MessageToVK, MessageFromKeyboard
 from .keyboard import Keyboard
@@ -85,6 +85,7 @@ class Bot(BasePoller):
             keyboard_timeout: int,
             user_timeout: int,
             is_dynamic: bool,
+            settings: Any = None,
     ) -> Keyboard:
         """
         Создаётся клавиатуру и добавляется в словарик активных клавиатур.
@@ -93,6 +94,7 @@ class Bot(BasePoller):
         :param keyboard_timeout:
         :param user_timeout:
         :param is_dynamic:
+        :param settings: Настройки
         :return:
         """
         keyboard = keyboard(
@@ -102,6 +104,7 @@ class Bot(BasePoller):
             user_timeout=user_timeout,
             is_dynamic=is_dynamic,
             logger=self.logger,
+            settings=settings,
         )
         await keyboard.start()
         self._keyboards[keyboard_name] = keyboard
@@ -134,7 +137,6 @@ class Bot(BasePoller):
                 # получаем сообщение
                 message = await self.queue_input.get()
                 # если сообщение пришло из вк
-                ic(type(message))
                 if isinstance(message, MessageFromVK):
                     await self.vk_message_handler(message)
                 # если сообщение пришло от клавиатуры

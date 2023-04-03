@@ -23,6 +23,7 @@ from .poller import BasePoller
 if TYPE_CHECKING:
     from dispatcher import Bot
     from user import User
+ic.includeContext = True
 
 
 class Keyboard(BasePoller):
@@ -51,6 +52,7 @@ class Keyboard(BasePoller):
             is_dynamic: bool = False,
             logger: Optional[logging.Logger] = None,
             timeout_keyboard: Optional["TimeoutKeyboard"] = None,
+            settings: Optional["Any"] = settings
     ):
         # ядро приложения
         self.bot = bot
@@ -94,6 +96,7 @@ class Keyboard(BasePoller):
         self.is_first = Event()
         self.timeout_keyboard = timeout_keyboard
         self.is_timeout = False
+        self.settings = settings
         self._init_()
 
     def _init_(self, ):
@@ -428,7 +431,6 @@ class Keyboard(BasePoller):
                 self.is_first.set()
                 self.settings = self.get_setting_keyboard()
                 self.create_buttons()
-                ic("First")
             else:
                 self.logger.error(f"The list of users is empty: {self.users}")
 
@@ -498,10 +500,8 @@ class Keyboard(BasePoller):
                 keyboard_timeout=self.bot.keyboard_expired,
                 user_timeout=self.bot.user_expired,
                 is_dynamic=is_dynamic,
+                settings=settings,
             )
-            # если есть настройки
-            if settings:
-                keyboard.data["settings"] = settings
             # Переносим пользователей из текущей клавиатуры в новую
             for user_id in user_ids:
                 await self.delete_user(user_id)
