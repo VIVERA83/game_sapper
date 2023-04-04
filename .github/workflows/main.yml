@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - master
-  paths-ignore:
-    - ".github/workflows/*"
+    paths-ignore:
+      - ".github/workflows/*"
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
