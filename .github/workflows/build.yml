@@ -13,6 +13,7 @@ jobs:
         id: build
         uses: cloudposse/github-action-docker-build-push@main
         with:
+          file: dockerfile_game_sapper
           registry: registry.hub.docker.com
           organization: "${{ github.event.repository.owner.login }}"
           repository: "${{ github.event.repository.name }}"
