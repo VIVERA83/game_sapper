@@ -4,7 +4,7 @@ on:
     types: [published]
 jobs:
   build_and_pub:
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest]
     env:
       LOGIN: ${{secrets.DOCKER_LOGIN}}
       NAME: ${{secrets.DOCKER_NAME}}
