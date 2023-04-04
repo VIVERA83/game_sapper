@@ -1,6 +1,6 @@
 name: Build
 on:
-  push:
+  pull_request:
     branches: [ master ]
 jobs:
   build_test:
@@ -45,7 +45,6 @@ jobs:
     steps:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
-        # TODO: add env vars as secrets on GitHub
         with:
           # VPS IP
           host: ${{ secrets.VPS_SSH_HOST }}
@@ -57,8 +56,8 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
             echo "Pull new image"
-            docker-compose -f /home/${{ secrets.VPS_SSH_USERNAME }}/kts_winter_2023_4_xo/docker-compose.yml pull
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/game_sapper:latest
             echo "Restart the container"
-            docker-compose -f /home/${{ secrets.VPS_SSH_USERNAME }}/kts_winter_2023_4_xo/docker-compose.yml up --force-recreate --build --no-deps -d
-            echo "Delete old image"
-            docker image prune -f
+            docker stop ${{ github.event.repository.name }}
+            docker run --rm --name game_sapper -d -p 8004:8004 -e POSTGRES__DB=${{secrets.POSTGRES__DB}} -e POSTGRES__USER=${{secrets.POSTGRES__USER}} -e POSTGRES__PASSWORD=${{secrets.POSTGRES__PASSWORD}} -e VK__TOKEN=${{secrets.VK__TOKEN}} -e VK__GROUP_ID=${{secrets.VK__GROUP_ID}} ${{ secrets.DOCKERHUB_USERNAME }}/game_sapper:latest
+            echo "Pull new image OK"
