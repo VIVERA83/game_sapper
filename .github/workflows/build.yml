@@ -6,14 +6,12 @@ jobs:
   build_test:
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: Setup tests
         run: echo "ok"
 
   push_to_docker_hub:
     runs-on: ubuntu-latest
-    # Build Docker image and push to Docker Hub only if the app build and test is successfull
     needs: [ build_test ]
 
     steps:
@@ -46,13 +44,9 @@ jobs:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
         with:
-          # VPS IP
           host: ${{ secrets.VPS_SSH_HOST }}
-          # VPS username
           username: ${{ secrets.VPS_SSH_USERNAME }}
-          # SSH key (copy it from your local machine)
           key: ${{ secrets.VPS_SSH_SECRET }}
-          # SSH port
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
             echo "Pull new image"
