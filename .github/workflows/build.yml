@@ -8,10 +8,13 @@ jobs:
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
+        run: echo "🎉 Set up QEMU - OK"
       - name: Set up Docker Builder
         uses: docker/setup-buidx-action@v2
+        run: echo "🎉 Set up Docker Builder - OK"
       - name: Login to Docker Hub
         uses: docker/login-action@v2
+        run: echo "🎉 Login to Docker Hub - OK"
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -21,3 +24,4 @@ jobs:
           file: dockerfile_game_sapper
           push: true
           tags: user/app:latest
+        run: echo "🎉 Build and push - OK"
