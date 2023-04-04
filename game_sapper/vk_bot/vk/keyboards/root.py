@@ -66,7 +66,7 @@ class RootKeyboard(Keyboard):
         return await self.redirect(
             keyboard=GameConfigKeyboard,
             user_ids=[message.user_id],
-            # is_private=True,
+            is_private=True,
 
         )
 
