@@ -24,7 +24,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run tests
         # Запускаем тесты
-        run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+        run: echo "🎉 ТУТА ДОЛЖНЫ БЫТЬ ТЕСТЫ"
 
 
   build_and_pub:
@@ -33,7 +33,7 @@ jobs:
     runs-on: [ ubuntu-latest ]
     env:
       LOGIN: ${{ secrets.DOCKER_LOGIN }}
-      NAME: ${{ secrets.DOCKER_NAME }}
+      NAME: "game_sapper"
     steps:
       - name: Login to docker.io
         # Сначала мы логинимся в docker.io
