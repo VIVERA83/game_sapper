@@ -42,10 +42,10 @@ jobs:
       - uses: actions/checkout@master
       - name: Build image
         # Собираем image и называем его так как указано в hub.docker т.е. login/repository:version
-        run: docker build -t $LOGIN/$NAME:${GITHUB_REF:11} -f dockerfile_game_sapper .
+        run: docker build -t $LOGIN/$NAME:${{GITHUB_REF:11}} -f dockerfile_game_sapper .
       - name: Push image to docker.io
         # Пушим образ в registry
-        run: docker push $LOGIN/$NAME:${GITHUB_REF:11}
+        run: docker push $LOGIN/$NAME:${{GITHUB_REF:11}}
 
 #  deploy:
 #    # Если мы успешно собрали контейнер и отправили в registry, то делаем хук деплоймент серверу
