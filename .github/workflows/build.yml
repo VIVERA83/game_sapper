@@ -4,6 +4,11 @@ on:
     branches: [ master ]
     paths-ignore:
       - ".github/workflows/*"
+      - "docs/*"
+      - ".env*"
+      - ".gitignore"
+      - "README.md"
+      - "requirements*.txt"
 jobs:
   build_test:
     runs-on: ubuntu-latest
@@ -55,5 +60,5 @@ jobs:
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/game_sapper:latest
             echo "Restart the container"
             docker stop ${{ github.event.repository.name }}
-            docker run --rm --name game_sapper -d -p 8004:8004 -e POSTGRES__DB=${{secrets.POSTGRES__DB}} -e POSTGRES__USER=${{secrets.POSTGRES__USER}} -e POSTGRES__PASSWORD=${{secrets.POSTGRES__PASSWORD}} -e VK__TOKEN=${{secrets.VK__TOKEN}} -e VK__GROUP_ID=${{secrets.VK__GROUP_ID}} ${{ secrets.DOCKERHUB_USERNAME }}/game_sapper:latest
+            docker run --rm --name game_sapper -d -p ${{secrets.VPS_PORT}}:${{secrets.VPS_PORT}} -e POSTGRES__DB=${{secrets.POSTGRES__DB}} -e POSTGRES__USER=${{secrets.POSTGRES__USER}} -e POSTGRES__PASSWORD=${{secrets.POSTGRES__PASSWORD}} -e VK__TOKEN=${{secrets.VK__TOKEN}} -e VK__GROUP_ID=${{secrets.VK__GROUP_ID}} ${{ secrets.DOCKERHUB_USERNAME }}/game_sapper:latest
             echo "Pull new image OK"
