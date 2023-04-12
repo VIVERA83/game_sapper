@@ -165,8 +165,10 @@ class VkApiAccessor(BaseAccessor):
         ) as resp:
             data = await resp.json()
             vk_response: VKResponse = VKResponseSchema().load(data)
-            if vk_response.failed == 2:
-                self.logger.warning(f"The session key is outdated, we are updating")
+            if vk_response.failed:
+                self.logger.warning(f"The session key is outdated, we are updating. "
+                                    f"See the api for more details: "
+                                    f"https://dev.vk.com/api/bots-long-poll/getting-started")
                 await self._get_long_poll_service()
                 return []
             self.ts = vk_response.ts
