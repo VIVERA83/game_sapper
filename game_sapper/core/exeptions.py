@@ -40,7 +40,7 @@ async def error_handler(error: Exception, request: "Request"):
             message="Internal Server Error",
         )
 
-    request.app.logger.warning(traceback.format_exc() if request.app.settings.traceback else error)
+    request.app.logger.critical(traceback.format_exc() if request.app.settings.traceback else error)
     return error_response
 
 
